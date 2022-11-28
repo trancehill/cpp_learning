@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+#SETTINGS
+makefile_template_base64="Q0MgPSBnKysKQ0NfRkxBR1MgPSAtTzMgLVdhbGwKTERfRkxBR1MgPQpOQU1FID0gbXlwcm9ncmFtClNPVVJDRV9ESVIgPSAuL3NyYwpTT1VSQ0VfRklMRVMgPSAkKHNoZWxsIGZpbmQgJChTT1VSQ0VfRElSKSAtdHlwZSBmIC1pcmVnZXggJy4qXC5cKGNcfGlcfGlpXHxjY1x8Y3BcfGN4eFx8Y3BwXHxDUFBcfGMrK1x8Q1x8c1x8U1x8c3hcKScgKQpPVVRQVVRfRElSID0gLi9vdXRwdXQKSU5TVEFMTF9ESVIgPSAvdXNyL2xvY2FsL2JpbgoKYWxsOiAkKE9VVFBVVF9ESVIpICQoU09VUkNFX0ZJTEVTKSAKCSQoQ0MpICQoQ0NfRkxBR1MpICQoU09VUkNFX0ZJTEVTKSAtbyAiJChPVVRQVVRfRElSKS8kKE5BTUUpIiAkKExEX0ZMQUdTKQoKLlBIT05ZOiBpbnN0YWxsCmluc3RhbGw6IGFsbAoJY3AgJChPVVRQVVRfRElSKS8kKE5BTUUpICQoSU5TVEFMTF9ESVIpLyQoTkFNRSkKCi5QSE9OWTogY2xlYW4KY2xlYW46IAoJcm0gLXJmICQoT1VUUFVUX0RJUikKCQouUEhPTlk6IHVuaW5zdGFsbAp1bmluc3RhbGw6CglybSAtcmYgJChJTlNUQUxMX0RJUikvJChOQU1FKQoKJChPVVRQVVRfRElSKToKCW1rZGlyICQoT1VUUFVUX0RJUikK"
+main_cpp_template_base64="I2luY2x1ZGUgPGNzdGRpbz4KCmludCBtYWluKGludCBhcmdjLCBjaGFyKiogYXJndikKewogICAgcmV0dXJuIDA7Cn0="
+#DO NOT TOUCH
+print_usage()
+{
+    echo -e "Usage: $1 <NAME> [DIR]\n\nDescription:\n" \
+"\tInitializes a simple C++ project into DIR/NAME\n" \
+"\tBy default DIR is the current working directory (./)\n\n" \
+"\tFollowing files will be generated:\n" \
+"\t\tDIR/NAME/Makefile\n" \
+"\t\tDIR/NAME/src/main.cpp\n\n"
+
+}
+
+if [ $# -lt 1 ]; then
+    print_usage $0
+    exit 0
+fi
+
+project_dir="./"
+if [ $# -gt 1 ]; then
+    if [ ! -d "$2" ]; then
+        echo -e "[DIR] must exist for project initialization!\nNo such a file or directory: $2"
+        exit 2
+    fi
+    project_dir="$2"
+fi
+
+project_path="$project_dir/$1"
+mkdir -p "$project_path"
+if [ $? -eq 0 ]; then
+    mkdir -p "$project_path/src"
+    if [ $? -eq 0 ]; then
+        echo "$main_cpp_template_base64" | base64 -d > "$project_path/src/main.cpp"
+        make_file_path="$project_path/Makefile"
+        echo "$makefile_template_base64" | base64 -d > "$make_file_path"
+        if [ -f "$make_file_path" ]; then
+            sed -i "s/myprogram/$1/g" "$make_file_path"
+        fi
+    fi
+fi

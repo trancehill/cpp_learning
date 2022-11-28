@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ $# -lt 1 ]; then
+    echo -e "Usage: $0 <EXAMPLE_NAME>"
+    exit 0
+fi
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+$SCRIPT_DIR/create_project $1 "$SCRIPT_DIR/../examples/"
