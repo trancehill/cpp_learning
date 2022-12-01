@@ -27,6 +27,7 @@ File::~File()
 
 std::vector<uint8_t> File::read(size_t max_size)
 {
+    mLastError = 0;
     std::vector<uint8_t> result;
 
     if(mFile)
@@ -34,10 +35,12 @@ std::vector<uint8_t> File::read(size_t max_size)
         result.resize( (max_size == 0) ? getFileSize() : max_size );
         if(result.size() > 0)
         {
+            //TODO: memcopy data from not empty LineCahce
             size_t read_bytes = fread(result.data(), 1, result.size(), mFile);
             if(read_bytes > 0)
             {
-                result.resize(read_bytes);
+                //to indicate how many bytes have been read
+                result.resize(read_bytes); //to reduce the value of vector.size(), will not shrink the vector
             }
             else
             {
@@ -51,7 +54,8 @@ std::vector<uint8_t> File::read(size_t max_size)
 }
 
 std::string File::readLine()
-{
+{   
+    mLastError = 0;
     bool foundLine = false;
     std::string result;
 
@@ -71,7 +75,7 @@ std::string File::readLine()
 
             std::string_view sv(reinterpret_cast<char*>(mCache.buffer.data() + mCache.cursor), mCache.readBytes);
 
-            size_t pos = sv.find('\n'); // THIS IS FUCKED
+            size_t pos = sv.find('\n');
             if(pos != std::string_view::npos)
             {
                 result += std::string(sv.substr(mCache.cursor, pos));
@@ -92,24 +96,26 @@ std::string File::readLine()
 
 bool File::seek(size_t offset, File::Whence whence)
 {
-    bool result = false;
+    mLastError = 0;
+    bool seek_success = false;
 
     if(mFile)
     {   
-        if(fseek(mFile, offset, (int)whence) > 0)
+        if(fseek(mFile, offset, (int)whence) != 0)
         {
             mLastError = errno;
         }
         else
         {
-            result = true;
+            seek_success = true;
         }
     }
-    return result;
+    return seek_success;
 }
 
 ssize_t File::tell()
 {   
+    mLastError = 0;
     ssize_t result = -1;
     if(mFile)
     {
@@ -124,20 +130,22 @@ ssize_t File::tell()
 
 size_t File::write(const std::vector<uint8_t>& data)
 {   
-    size_t result = 0;
+    mLastError = 0;
+    size_t written_bytes = 0;
     if(mFile && !data.empty())
     {   
-        result = fwrite(data.data(), 1, data.size(), mFile);
-        if(result != data.size())
+        written_bytes = fwrite(data.data(), 1, data.size(), mFile);
+        if(written_bytes != data.size())
         {
             mLastError = errno;
         }
     }
-    return result;
+    return written_bytes;
 }
 
 size_t File::write(const std::string& str)
 {
+    mLastError = 0;
     size_t result = 0;
     if(mFile && !str.empty())
     {  
@@ -152,6 +160,7 @@ size_t File::write(const std::string& str)
 
 size_t File::write(const uint8_t* data, size_t size)
 {   
+    mLastError = 0;
     size_t result = 0;
     if(mFile && (size > 0))
     {
