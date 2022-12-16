@@ -1,10 +1,10 @@
 #include "linked_list.h"
 
-LinkedList::LinkedList()
-{
-    mFirst = nullptr;
-    mCursor = mFirst;
-}
+LinkedList::LinkedList() 
+    : mFirst(nullptr)
+    , mSize(0)
+    , mCursor(mFirst)
+{}
 
 LinkedList::~LinkedList()
 {
@@ -83,13 +83,26 @@ void LinkedList::insert(size_t idx, uint32_t value)
 {
     if(idx < mSize)
     {
-        Elem* cursor = get_elem(idx-1);
-        Elem* next_value = cursor->next;
+        if(idx == 0)
+        {
+            Elem* next_value = mFirst;
+            mFirst = new Elem(value);
+            mFirst->next = next_value;
+        }
+        else
+        {
+            Elem* cursor = get_elem(idx-1);
+            Elem* next_value = cursor->next;
 
-        cursor->next = new Elem(value);
-        cursor->next->next = next_value;
+            cursor->next = new Elem(value);
+            cursor->next->next = next_value;
+        }
 
         ++mSize;
+    }
+    else
+    {
+        add(value);
     }
 }
 
@@ -135,8 +148,9 @@ LinkedList::Elem* LinkedList::get_elem(size_t idx)
 
     while (counter != idx)
     {
-        //printf("first: %p, cursor: %p, cnt: %lu, idx: %lu\n", mFirst, cursor, counter, idx);
+        printf("first: %p, cursor: %p, cnt: %lu, idx: %lu\n", mFirst, cursor, counter, idx);
         cursor = cursor->next;
+        printf("next: %p\n", cursor);
         ++counter;
     }
 

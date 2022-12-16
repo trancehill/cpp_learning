@@ -9,20 +9,30 @@ int main(int argc, char** argv)
     list.add(1);
     list.add(2);
     list.add(3);
-    list.insert(1, 4);
+    list.add(4);
+    list.insert(0, 5);
 
     printf("size: %lu\n", list.size());
-    printf("idx 0: %u\n", list.at(0));
-    printf("idx 1: %u\n", list.at(1));
-    printf("idx 2: %u\n", list.at(2));
-    printf("idx 3: %u\n", list.at(3));
+
+    //printf("%u\n", list.at(4));
+
+    for(size_t i=0; i < list.size(); ++i)
+    {
+        printf("idx %lu\n", i);
+        printf("value: %u\n", list.at(i));
+    }
+
+    return 0;
+
 
     list.remove(3);
 
+
     printf("size: %lu\n", list.size());
-    printf("idx 0: %u\n", list.at(0));
-    printf("idx 1: %u\n", list.at(1));
-    printf("idx 2: %u\n", list.at(2));
+    for(size_t i=0; i < list.size(); ++i)
+    {
+        printf("idx %lu: %u\n", i, list.at(i));
+    }
 
 
 
