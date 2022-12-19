@@ -17,8 +17,9 @@ public:
     {
         uint32_t data;
         Elem* next;
+        Elem* prev;
 
-        Elem(uint32_t _data) : data(_data), next(nullptr) {}
+        Elem(uint32_t _data, Elem* _prev) : data(_data), next(nullptr), prev(_prev) {}
     };
 
     LinkedList();
@@ -35,6 +36,8 @@ public:
 
     uint32_t current();
     uint32_t next();
+    uint32_t prev();
+    void reset();
 
     void clear();
 

@@ -17,7 +17,8 @@ void LinkedList::add(uint32_t value)
 
     if (cursor == nullptr)
     {
-        mFirst = new Elem(value);
+        mFirst = new Elem(value, nullptr);
+        reset();
     }
     else
     {
@@ -26,7 +27,7 @@ void LinkedList::add(uint32_t value)
             cursor = cursor->next;
         }
 
-        cursor->next = new Elem(value);
+        cursor->next = new Elem(value, cursor);
     }
 
     ++mSize;
@@ -40,24 +41,29 @@ void LinkedList::remove(size_t idx)
         {
             Elem* removed = mFirst;
             mFirst = removed->next;
+            mFirst->prev = nullptr;
+            reset();
 
             delete removed;
         }
         else
         {
-            size_t counter = 0;
+            size_t counter = 1;
 
-            Elem* prev_cursor = mFirst;
-            Elem* cursor = mFirst;
+            Elem* cursor = mFirst->next;
 
             while(counter != idx)
             {
-                prev_cursor = cursor;
                 cursor = cursor->next;
                 ++counter;
             }
-        
-            prev_cursor->next = cursor->next;
+
+            cursor->prev->next = cursor->next;
+
+            if(cursor->next != nullptr)
+            {
+                cursor->next->prev = cursor->prev;
+            }
 
             delete cursor;
         }
@@ -86,16 +92,23 @@ void LinkedList::insert(size_t idx, uint32_t value)
         if(idx == 0)
         {
             Elem* next_value = mFirst;
-            mFirst = new Elem(value);
+            mFirst = new Elem(value, nullptr);
             mFirst->next = next_value;
+            next_value->prev = mFirst;
+            reset();
         }
         else
         {
             Elem* cursor = get_elem(idx-1);
             Elem* next_value = cursor->next;
 
-            cursor->next = new Elem(value);
+            cursor->next = new Elem(value, cursor);
             cursor->next->next = next_value;
+
+            if (next_value != nullptr)
+            {
+                next_value->prev = cursor->next;
+            }
         }
 
         ++mSize;
@@ -116,10 +129,29 @@ uint32_t LinkedList::current()
     return mCursor->data;
 }
 uint32_t LinkedList::next()
-{
-    mCursor = mCursor->next;
+{      
+    if(mCursor->next != nullptr)
+    {
+        mCursor = mCursor->next;
+    }
 
     return current();
+}
+
+uint32_t LinkedList::prev()
+{
+    if(mCursor->prev != nullptr)
+    {
+        mCursor = mCursor->prev;
+    }
+
+    return current();
+}
+
+void LinkedList::reset()
+{
+    mCursor = mFirst;
+    return;
 }
 
 void LinkedList::clear()
@@ -148,9 +180,9 @@ LinkedList::Elem* LinkedList::get_elem(size_t idx)
 
     while (counter != idx)
     {
-        printf("first: %p, cursor: %p, cnt: %lu, idx: %lu\n", mFirst, cursor, counter, idx);
+        //printf("first: %p, cursor: %p, cnt: %lu, idx: %lu\n", mFirst, cursor, counter, idx);
         cursor = cursor->next;
-        printf("next: %p\n", cursor);
+        //printf("next: %p\n", cursor);
         ++counter;
     }
 
