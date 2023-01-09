@@ -1,12 +1,3 @@
-// Írj egy LinkedList nevű osztályt, mely uint32_t típusú értékeket tárolhat és a következő függvényekkel rendelkezik.
-// add - beszúr egy elemet a végére
-// size - visszaadja mennyi elem van a LinkedList -ben
-// at(idx) - visszaad egy elemet a megadott idx -en
-// insert(idx) - beszúr egy elemet az adott indexre
-// current() - visszaad egy aktuális elemet, amire egy belső cursor mutat
-// next() - lépteti a belső cursor -t a következő elemre
-// prev() - lépteti a belső cursor -t az előző elemre
-
 #include <cstdio>
 #include "stdint.h"
 
@@ -25,20 +16,64 @@ public:
     LinkedList();
     ~LinkedList();
 
+    /**
+     * Append a new entry to the end of the list
+     * 
+     * @param value Number to add
+    **/
     void add(uint32_t value);
+
+    /**
+     * Remove the entry at the given index from the list
+     * 
+     * @param idx Index of entry to remove
+    **/
     void remove(size_t idx);
 
+    /**
+     * Get the number of entries in the list
+    **/
     size_t size();
 
+    /**
+     * Get the value of the entry at the given index
+     * 
+     * @param idx Index to get value from
+     * @return Value at index
+    **/
     uint32_t at(size_t idx);
 
+    /**
+     * Insert a new entry at the given index
+     * 
+     * @param idx Where to insert the new value, if idx is larger than the list size, appends to the end
+     * @param value Number to insert
+    **/
     void insert(size_t idx, uint32_t value);
 
+    /**
+     * Get the value from the current cursor position
+    **/
     uint32_t current();
+
+    /**
+     * Move the cursor to the next index and returns its value 
+    **/
     uint32_t next();
+
+    /**
+     * Move the cursor to the previous index and returns its value 
+    **/
     uint32_t prev();
+
+    /**
+     * Reset the cursor to the start of the list
+    **/
     void reset();
 
+    /**
+     * Remove every element from the list
+    **/
     void clear();
 
 private:
